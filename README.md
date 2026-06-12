@@ -12,6 +12,13 @@ Tüm özelleştirmeler live-build yapılandırmaları ve hook scriptleri ile oto
 
 ---
 
+### 🌍 Farklı İşletim Sistemlerinde Derleme
+Bu proje, çalışmak için Debian/Kali tabanlı bir Linux ortamına ve `apt` paket yöneticisine ihtiyaç duyar. 
+
+Eğer Windows veya macOS kullanıyorsanız, derleme işlemlerini VirtualBox veya VMware üzerinden kurduğunuz bir Linux (Debian/Ubuntu/Kali) sanal makinesinde yapmalısınız. Doğrudan Windows veya macOS üzerinde çalışmaz.
+
+---
+
 ## 💻 Sistem Gereksinimleri ve Ortam Önerisi
 
 Derleme sürecinde disk ve bellek darboğazları (`xorriso` ve `tmpfs` hataları) yaşamamak için aşağıdaki gereksinimlerin karşılanması **kritiktir**.
@@ -65,8 +72,12 @@ mkdir -p kali-config/common/hooks/live/
 ```
 
 ### Adım 3: Görsellerin Hazırlanması
-Kendi tasarladığınız duvar kağıdını (desktop.png) ve giriş ekranı resmini (login.png) masaüstünüzden proje dizinine kopyalayın:
+Komutları çalıştırmadan önce, kullanacağınız görsellerin ana makinenizin Masaüstü (`~/Desktop/`) dizininde ve aşağıdaki isimlerle hazır olduğundan emin olun:
 
+* `desktop.png` (XFCE Masaüstü arka planı için)
+* `login.png` (LightDM giriş ekranı arka planı için)
+
+Görsellerin hazır olduğunu doğruladıktan sonra, proje klasörüne kopyalamak için şu komutları çalıştırın:
 ```bash
 cp ~/Desktop/desktop.png kali-config/common/includes.chroot/usr/share/panter-images/desktop.png
 cp ~/Desktop/login.png kali-config/common/includes.chroot/usr/share/panter-images/login.png
