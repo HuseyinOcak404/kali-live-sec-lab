@@ -56,6 +56,11 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl git live-build cdebootstrap xorriso
 ```
 
+Kontrol
+```bash
+dpkg -l | grep -E "live-build|xorriso|cdebootstrap"
+```
+
 ### Adım 2: Proje İskeletinin Klonlanması
 Kali'nin resmi derleme altyapısını indirin ve özelleştirme klasörlerini oluşturun:
 
@@ -71,6 +76,15 @@ mkdir -p kali-config/common/package-lists/
 mkdir -p kali-config/common/hooks/live/
 ```
 
+Kontrol
+```bash
+ls -ld ~/panter-os/kali-config/common/includes.chroot/etc/skel/
+ls -ld ~/panter-os/kali-config/common/includes.chroot/root/
+ls -ld ~/panter-os/kali-config/common/includes.chroot/usr/share/panter-images/
+ls -ld ~/panter-os/kali-config/common/package-lists/
+ls -ld ~/panter-os/kali-config/common/hooks/live/
+```
+
 ### Adım 3: Görsellerin Hazırlanması
 Komutları çalıştırmadan önce, kullanacağınız görsellerin ana makinenizin Masaüstü (`~/Desktop/`) dizininde ve aşağıdaki isimlerle hazır olduğundan emin olun:
 
@@ -79,10 +93,15 @@ Komutları çalıştırmadan önce, kullanacağınız görsellerin ana makineniz
 
 Görsellerin hazır olduğunu doğruladıktan sonra, proje klasörüne kopyalamak için şu komutları çalıştırın:
 ```bash
-cp ~/Desktop/desktop.png kali-config/common/includes.chroot/usr/share/panter-images/desktop.png
-cp ~/Desktop/login.png kali-config/common/includes.chroot/usr/share/panter-images/login.png
+# Masaüstündeki tüm desktop.* ve login.* dosyalarını kopyala
+cp ~/Desktop/desktop.* kali-config/common/includes.chroot/usr/share/panter-images/
+cp ~/Desktop/login.* kali-config/common/includes.chroot/usr/share/panter-images/
 ```
-
+Kontrol
+```bash
+ls -l kali-config/common/includes.chroot/usr/share/panter-images/
+file kali-config/common/includes.chroot/usr/share/panter-images/*
+```
 ### Adım 4: Sistem Kimliği (Hostname & MOTD)
 Sistem açıldığında terminalde belirecek karşılama mesajını ve makine adını ayarlayın:
 
@@ -105,6 +124,13 @@ cat << 'EOF' > kali-config/common/includes.chroot/etc/hosts
 ff02::1     ip6-allnodes
 ff02::2     ip6-allrouters
 EOF
+```
+
+Kontrol
+```bash
+cat kali-config/common/includes.chroot/etc/motd
+cat kali-config/common/includes.chroot/etc/hostname
+cat kali-config/common/includes.chroot/etc/hosts
 ```
 
 ### Adım 5: Terminal Tasarımı ve Paket Listesi
@@ -133,6 +159,13 @@ virtualbox-guest-utils
 EOF
 ```
 
+Kontrol
+```bash
+cat kali-config/common/includes.chroot/etc/skel/.bashrc
+cat kali-config/common/includes.chroot/root/.bashrc
+cat kali-config/common/package-lists/panter-tools.list.chroot
+```
+
 ### Adım 6: Otomasyon Betiği (Hook Script)
 Derleme işleminin son aşamasında özelleştirmelerin uygulanması için bir hook betiği oluşturun.
 
@@ -141,29 +174,59 @@ cat << 'EOF' > kali-config/common/hooks/live/99-panter-os-setup.chroot
 #!/bin/sh
 echo ">>> Applying Panter-OS customizations..."
 
-# 1. Varsayılan Duvar Kağıtlarını Ezme İşlemi
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes.xml
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes2.xml
+# ==========================================
+# 1. MASAÜSTÜ ARKA PLANI (XFCE)
+# ==========================================
+# YÖNTEM A: Ezme (Format uyuşmazlığını önlemek için JPG'ye JPG veriyoruz)
+rm -f /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
+rm -f /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
 
-# 2. LightDM Giriş Ekranı (Login) Görselini Ezme İşlemi
-# Önce o oklu kısayolları (symlink) siliyoruz
+cp -f /usr/share/panter-images/desktop.jpg /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
+cp -f /usr/share/panter-images/desktop.jpg /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
+
+# YÖNTEM B: Konfigürasyon (Kural Değiştirme)
+update-alternatives --install /usr/share/images/desktop-base/desktop-background desktop-background /usr/share/panter-images/desktop.jpg 999
+update-alternatives --set desktop-background /usr/share/panter-images/desktop.jpg
+
+# ==========================================
+# 2. GİRİŞ EKRANI (LIGHTDM LOGIN)
+# ==========================================
+# YÖNTEM A-1: Kök Klasördeki (Backgrounds) Login Dosyalarını Ezme
+rm -f /usr/share/backgrounds/kali/login.svg
+rm -f /usr/share/backgrounds/kali/login-blurred
+
+cp -f /usr/share/panter-images/login.svg /usr/share/backgrounds/kali/login.svg
+cp -f /usr/share/panter-images/login.jpg /usr/share/backgrounds/kali/login-blurred
+
+# YÖNTEM A-2: Tema Klasöründeki Kısayolları Ezme
 rm -f /usr/share/desktop-base/kali-theme/login/background
 rm -f /usr/share/desktop-base/kali-theme/login/background.svg
 rm -f /usr/share/desktop-base/kali-theme/login/background-blurred
 
-# Sonra kendi resmimizi o isimlerle oraya betonluyoruz
-cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background
-cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background.svg
-cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background-blurred
+# Uzantısız ve blurred dosyaları standart JPG ile eziyoruz
+cp -f /usr/share/panter-images/login.jpg /usr/share/desktop-base/kali-theme/login/background
+cp -f /usr/share/panter-images/login.jpg /usr/share/desktop-base/kali-theme/login/background-blurred
+
+# SVG dosyasını GERÇEK SVG ile eziyoruz! 
+cp -f /usr/share/panter-images/login.svg /usr/share/desktop-base/kali-theme/login/background.svg
+
+# YÖNTEM B: Konfigürasyon (Kural Değiştirme)
+mkdir -p /etc/lightdm
+cat << 'CONF' > /etc/lightdm/lightdm-gtk-greeter.conf
+[greeter]
+background=/usr/share/panter-images/login.jpg
+CONF
+
+# ==========================================
+# 3. KABUK (SHELL) AYARLARI VE İZİNLER
+# ==========================================
+# ZSH yerine BASH'i Varsayılan Yapma
+sed -i 's/DSHELL=\/bin\/zsh/DSHELL=\/bin\/bash/g' /etc/adduser.conf
+chsh -s /bin/bash root
 
 chmod -R 755 /usr/share/backgrounds/kali/
 chmod -R 755 /usr/share/desktop-base/kali-theme/login/
-
-# 3. ZSH yerine BASH'i varsayılan yapma
-chsh -s /bin/bash kali
-chsh -s /bin/bash root
+chmod -R 755 /usr/share/panter-images/
 
 echo ">>> Panter-OS customization completed."
 EOF
@@ -173,6 +236,11 @@ EOF
 chmod +x kali-config/common/hooks/live/99-panter-os-setup.chroot
 ```
 
+Kontrol
+```bash
+ls -l kali-config/common/hooks/live/99-panter-os-setup.chroot
+```
+
 ### Adım 7: Derlemeyi Başlatma
 Tüm konfigürasyonlar tamamlandıktan sonra XFCE masaüstü varyantını belirterek ISO derleme sürecini başlatın:
 
@@ -180,6 +248,16 @@ Tüm konfigürasyonlar tamamlandıktan sonra XFCE masaüstü varyantını belirt
 sudo lb clean
 sudo ./build.sh --variant xfce && mv images/*.iso images/panter-os.iso
 ```
+
+Takip/Kontrol
+```bash
+#derleme esnasında logları takip etmek için farklı bir terminalde aşağıdaki komutu çalıştırın.
+tail -f build.log
+
+#iso dosyasının çıktısını buradan kontrol edin.
+ls -lh images/panter-os.iso
+```
+
 
 ⚠️ Kontrol Edilmesi Gereken Kritik Adımlar (Checklist)
 
