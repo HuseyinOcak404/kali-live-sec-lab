@@ -1,63 +1,65 @@
 # Panter-OS: Custom Kali Linux Live Builder
 
-Siber güvenlik laboratuvarı ihtiyaçları doğrultusunda özelleştirilmiş, bağımsız ve taşınabilir bir Kali Linux Live ISO oluşturmak için hazırlanmış bir otomasyon projesi.
+An automation project designed to create a customized, standalone, and portable Kali Linux Live ISO for cybersecurity laboratory environments.
 
-**Bu çalışma, Linux dağıtımı özelleştirme ve yeniden derleme süreçlerini öğrenmek amacıyla hazırlanmıştır.**
+**This project was created to learn Linux distribution customization and rebuilding processes.**
 
-## 🎯 Projenin Amacı
+## 🎯 Project Purpose
 
-Bu proje Kali Linux tabanlı özelleştirilmiş bir Live ISO üretir. Hostname, MOTD, terminal görünümü, duvar kağıdı ve paket seçimi build sürecinde otomatik olarak uygulanır.
+This project produces a customized Live ISO based on Kali Linux. The hostname, MOTD, terminal appearance, wallpaper, and package selection are automatically applied during the build process.
 
-Tüm özelleştirmeler live-build yapılandırmaları ve hook scriptleri ile otomatik olarak uygulanmaktadır.
-
----
-
-### 🌍 Farklı İşletim Sistemlerinde Derleme
-Bu proje, çalışmak için Debian/Kali tabanlı bir Linux ortamına ve `apt` paket yöneticisine ihtiyaç duyar. 
-
-Eğer Windows veya macOS kullanıyorsanız, derleme işlemlerini VirtualBox veya VMware üzerinden kurduğunuz bir Linux (Debian/Ubuntu/Kali) sanal makinesinde yapmalısınız. Doğrudan Windows veya macOS üzerinde çalışmaz.
+All customizations are applied automatically through live-build configurations and hook scripts.
 
 ---
 
-## 💻 Sistem Gereksinimleri ve Ortam Önerisi
+### 🌍 Building on Different Operating Systems
 
-Derleme sürecinde disk ve bellek darboğazları (`xorriso` ve `tmpfs` hataları) yaşamamak için aşağıdaki gereksinimlerin karşılanması **kritiktir**.
+This project requires a Debian/Kali-based Linux environment and the `apt` package manager to function.
 
-* **Önerilen Geliştirme Ortamı:** Derleme ve test işlemlerinin ana makine (host) yerine **VirtualBox** üzerinde oluşturulmuş temiz bir sanal makinede yapılması tavsiye edilir.
-* **İşletim Sistemi:** Debian, Ubuntu veya Kali Linux (Sanal makine üzerinde).
-* **Boş Disk Alanı:** En az **30 GB** (Derleme esnasında oluşan geçici chroot ve rootfs dosyaları için gereklidir).
-* **RAM:** Geliştirme ortamı için en az **4 GB** (İdeal olarak 8 GB).
+If you are using Windows or macOS, you should perform the build process inside a Linux virtual machine (Debian/Ubuntu/Kali) running on VirtualBox or VMware. It does not run directly on Windows or macOS.
 
 ---
 
-## Özellikler/Proje Çıktısı
+## 💻 System Requirements and Recommended Environment
 
-- Özel hostname (cyber-node-01)
-- Özel MOTD (PANTER-OS)
-- Özel terminal görünümü ([SEC-LAB])
-- Özel duvar kağıdı
-- XFCE tabanlı masaüstü
-- Live ISO desteği
-- VirtualBox uyumluluğu
-- Ön yüklü laboratuvar araçları (nmap, wireshark, tmux)
+To avoid disk and memory bottlenecks (`xorriso` and `tmpfs` errors) during the build process, the following requirements are **critical**.
+
+* **Recommended Development Environment:** It is recommended to perform build and testing operations in a clean virtual machine running on **VirtualBox** rather than directly on the host system.
+* **Operating System:** Debian, Ubuntu, or Kali Linux (inside a virtual machine).
+* **Free Disk Space:** At least **30 GB** (required for temporary chroot and rootfs files generated during the build process).
+* **RAM:** At least **4 GB** (8 GB recommended).
 
 ---
 
+## Features / Project Output
 
-## 🚀 Adım Adım Kurulum ve Derleme Rehberi
+* Custom hostname (`cyber-node-01`)
+* Custom MOTD (`PANTER-OS`)
+* Custom terminal prompt (`[SEC-LAB]`)
+* Custom wallpaper
+* XFCE-based desktop environment
+* Live ISO support
+* VirtualBox compatibility
+* Pre-installed lab tools (`nmap`, `wireshark`, `tmux`)
 
-Aşağıdaki adımları sırasıyla uygulayarak kendi Panter-OS ISO dosyanızı derleyebilirsiniz.
+---
 
-### Adım 1: Temel Kütüphanelerin Kurulumu
-Derleme motoru ve gerekli bağımlılıkları sisteme kurun:
+## 🚀 Step-by-Step Installation and Build Guide
+
+Follow the steps below to build your own Panter-OS ISO image.
+
+### Step 1: Install Required Packages
+
+Install the build engine and required dependencies:
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl git live-build cdebootstrap xorriso
 ```
 
-### Adım 2: Proje İskeletinin Klonlanması
-Kali'nin resmi derleme altyapısını indirin ve özelleştirme klasörlerini oluşturun:
+### Step 2: Clone the Project Skeleton
+
+Download Kali's official build infrastructure and create the customization directories:
 
 ```bash
 cd ~
@@ -71,32 +73,37 @@ mkdir -p kali-config/common/package-lists/
 mkdir -p kali-config/common/hooks/live/
 ```
 
-### Adım 3: Görsellerin Hazırlanması
-Komutları çalıştırmadan önce, kullanacağınız görsellerin ana makinenizin Masaüstü (`~/Desktop/`) dizininde ve aşağıdaki isimlerle hazır olduğundan emin olun:
+### Step 3: Prepare the Images
 
-* `desktop.png` (XFCE Masaüstü arka planı için)
-* `login.png` (LightDM giriş ekranı arka planı için)
+Before running the commands, make sure the images you plan to use are available on your Desktop (`~/Desktop/`) with the following names:
 
-Görsellerin hazır olduğunu doğruladıktan sonra, proje klasörüne kopyalamak için şu komutları çalıştırın:
+* `desktop.png` (for the XFCE desktop background)
+* `login.png` (for the LightDM login screen background)
+
+After confirming that the images are ready, run the following commands to copy them into the project directory:
+
 ```bash
 cp ~/Desktop/desktop.png kali-config/common/includes.chroot/usr/share/panter-images/desktop.png
 cp ~/Desktop/login.png kali-config/common/includes.chroot/usr/share/panter-images/login.png
 ```
 
-### Adım 4: Sistem Kimliği (Hostname & MOTD)
-Sistem açıldığında terminalde belirecek karşılama mesajını ve makine adını ayarlayın:
+### Step 4: System Identity (Hostname & MOTD)
+
+Configure the welcome message displayed in the terminal and the system hostname:
 
 ```bash
 cat << 'EOF' > kali-config/common/includes.chroot/etc/motd
 ============================================================
-* DAĞITIM: PANTER-OS SİBER GÜVENLİK LABORATUVARI OS        *
-* DURUM: SİSTEM BAŞARIYLA YÜKLENDİ...                      *
+* DISTRIBUTION: PANTER-OS CYBERSECURITY LAB OS            *
+* STATUS: SYSTEM SUCCESSFULLY LOADED...                   *
 ============================================================
 EOF
 ```
+
 ```bash
 echo "cyber-node-01" > kali-config/common/includes.chroot/etc/hostname
 ```
+
 ```bash
 cat << 'EOF' > kali-config/common/includes.chroot/etc/hosts
 127.0.0.1   localhost
@@ -107,23 +114,26 @@ ff02::2     ip6-allrouters
 EOF
 ```
 
-### Adım 5: Terminal Tasarımı ve Paket Listesi
-Özel [SEC-LAB] terminal yapısını ve ISO içine gömülecek laboratuvar araçları ile X11 sanal makine sürücülerini tanımlayın:
+### Step 5: Terminal Customization and Package List
+
+Define the custom `[SEC-LAB]` terminal prompt and the lab tools and VirtualBox X11 drivers to be included in the ISO:
 
 ```bash
-# Normal kullanıcı (kali) için Terminal Tasarımı
+# Terminal Prompt for the default user (kali)
 cat << 'EOF' > kali-config/common/includes.chroot/etc/skel/.bashrc
 export PS1="\[\e[1;31m\][SEC-LAB]\[\e[0m\]-\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
 EOF
 ```
+
 ```bash
-# Root kullanıcısı için Terminal Tasarımı
+# Terminal Prompt for the root user
 cat << 'EOF' > kali-config/common/includes.chroot/root/.bashrc
 export PS1="\[\e[1;31m\][SEC-LAB]\[\e[0m\]-\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\$ "
 EOF
 ```
+
 ```bash
-# Gerekli Araçlar ve VirtualBox Sürücüleri
+# Required Tools and VirtualBox Drivers
 cat << 'EOF' > kali-config/common/package-lists/panter-tools.list.chroot
 nmap
 wireshark
@@ -133,50 +143,52 @@ virtualbox-guest-utils
 EOF
 ```
 
-### Adım 6: Otomasyon Betiği (Hook Script)
-Derleme işleminin son aşamasında özelleştirmelerin uygulanması için bir hook betiği oluşturun.
+### Step 6: Automation Script (Hook Script)
+
+Create a hook script that applies the customizations during the final stage of the build process.
 
 ```bash
 cat << 'EOF' > kali-config/common/hooks/live/99-panter-os-setup.chroot
 #!/bin/sh
 echo ">>> Applying Panter-OS customizations..."
 
-# 1. Varsayılan Duvar Kağıtlarını Ezme İşlemi
+# 1. Replace the default wallpapers
 cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-wallpaper_16x9.png
 cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-wallpaper_16x9.svg
 
-# 2. LightDM Giriş Ekranı (Login) Görselini Ezme İşlemi
+# 2. Replace the LightDM login screen background
 cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background
 cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background.svg
 
 chmod -R 755 /usr/share/backgrounds/kali/
 chmod -R 755 /usr/share/desktop-base/kali-theme/login/
 
-# 3. ZSH yerine BASH'i varsayılan yapma
+# 3. Set Bash as the default shell instead of ZSH
 chsh -s /bin/bash kali
 chsh -s /bin/bash root
 
 echo ">>> Panter-OS customization completed."
 EOF
 ```
+
 ```bash
-# Betiğe çalışma izni verin
+# Make the script executable
 chmod +x kali-config/common/hooks/live/99-panter-os-setup.chroot
 ```
 
-### Adım 7: Derlemeyi Başlatma
-Tüm konfigürasyonlar tamamlandıktan sonra XFCE masaüstü varyantını belirterek ISO derleme sürecini başlatın:
+### Step 7: Start the Build Process
+
+After completing all configurations, start the ISO build process using the XFCE desktop variant:
 
 ```bash
 sudo lb clean
 sudo ./build.sh --variant xfce && mv images/*.iso images/panter-os.iso
 ```
 
-⚠️ Kontrol Edilmesi Gereken Kritik Adımlar (Checklist)
+## ⚠️ Critical Checklist
 
-- **RAM:** En az 4 GB
-- **Video Memory:** 128 MB
-- **Graphics Controller:** VBoxSVGA
-- **3D Acceleration:** Disabled
-- **Hook Script:** Çalıştırma izni verilmiş olmalı
-
+* **RAM:** At least 4 GB
+* **Video Memory:** 128 MB
+* **Graphics Controller:** VBoxSVGA
+* **3D Acceleration:** Disabled
+* **Hook Script:** Must have executable permissions
