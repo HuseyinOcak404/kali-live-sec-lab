@@ -86,10 +86,18 @@ ls -ld ~/panter-os/kali-config/common/hooks/live/
 ```
 
 ### Adım 3: Görsellerin Hazırlanması
+Linux masaüstü (XFCE) ve giriş ekranı (LightDM) yöneticilerinin format uyuşmazlığı nedeniyle (örneğin sistem SVG beklerken PNG bulduğunda) çökmesini ve siyah ekrana düşmesini engellemek için "Çoklu Format" (Failsafe) stratejisi uygulanmaktadır.
+
 Komutları çalıştırmadan önce, kullanacağınız görsellerin ana makinenizin Masaüstü (`~/Desktop/`) dizininde ve aşağıdaki isimlerle hazır olduğundan emin olun:
 
-* `desktop.png` (XFCE Masaüstü arka planı için)
-* `login.png` (LightDM giriş ekranı arka planı için)
+**Masaüstü (XFCE) İçin:**
+* `desktop.png`
+* `desktop.jpg` (veya .jpeg)
+
+**Giriş Ekranı (LightDM) İçin:**
+* `login.png`
+* `login.jpg` (veya .jpeg)
+* `login.svg` (Gerçek vektör formatında olmalıdır)
 
 Görsellerin hazır olduğunu doğruladıktan sonra, proje klasörüne kopyalamak için şu komutları çalıştırın:
 ```bash
@@ -245,7 +253,7 @@ ls -l kali-config/common/hooks/live/99-panter-os-setup.chroot
 Tüm konfigürasyonlar tamamlandıktan sonra XFCE masaüstü varyantını belirterek ISO derleme sürecini başlatın:
 
 ```bash
-sudo lb clean
+sudo lb clean --purge
 sudo ./build.sh --variant xfce && mv images/*.iso images/panter-os.iso
 ```
 
