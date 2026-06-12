@@ -153,12 +153,25 @@ cat << 'EOF' > kali-config/common/hooks/live/99-panter-os-setup.chroot
 echo ">>> Applying Panter-OS customizations..."
 
 # 1. Replace the default wallpapers
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-wallpaper_16x9.png
-cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-wallpaper_16x9.svg
+cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
+cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
+cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes.xml
+cp -f /usr/share/panter-images/desktop.png /usr/share/backgrounds/kali/kali-cubes2.xml
 
 # 2. Replace the LightDM login screen background
+rm -f /usr/share/desktop-base/kali-theme/login/background
+rm -f /usr/share/desktop-base/kali-theme/login/background.svg
+rm -f /usr/share/desktop-base/kali-theme/login/background-blurred
+
 cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background
 cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background.svg
+cp -f /usr/share/panter-images/login.png /usr/share/desktop-base/kali-theme/login/background-blurred
+
+
+chmod -R 755 /usr/share/backgrounds/kali/
+chmod -R 755 /usr/share/desktop-base/kali-theme/login/
+
+
 
 chmod -R 755 /usr/share/backgrounds/kali/
 chmod -R 755 /usr/share/desktop-base/kali-theme/login/
