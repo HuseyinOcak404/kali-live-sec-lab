@@ -1,0 +1,49 @@
+#!/bin/sh
+echo ">>> Applying Panter-OS customizations (All Formats & Deep Clean Edition)..."
+
+# ==========================================
+# 1. MASAÜSTÜ ARKA PLANI (XFCE)
+# ==========================================
+rm -f /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
+rm -f /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
+
+cp -f /usr/share/panter-images/desktop.jpg /usr/share/backgrounds/kali/kali-cubes-16x9.jpg
+cp -f /usr/share/panter-images/desktop.jpg /usr/share/backgrounds/kali/kali-cubes2-16x9.jpg
+
+update-alternatives --install /usr/share/images/desktop-base/desktop-background desktop-background /usr/share/panter-images/desktop.jpg 999
+update-alternatives --set desktop-background /usr/share/panter-images/desktop.jpg
+
+# ==========================================
+# 2. GİRİŞ EKRANI (LIGHTDM LOGIN)
+# ==========================================
+rm -f /usr/share/backgrounds/kali/login.svg
+rm -f /usr/share/backgrounds/kali/login-blurred
+
+cp -f /usr/share/panter-images/login.svg /usr/share/backgrounds/kali/login.svg
+cp -f /usr/share/panter-images/login.jpg /usr/share/backgrounds/kali/login-blurred
+
+rm -f /usr/share/desktop-base/kali-theme/login/background
+rm -f /usr/share/desktop-base/kali-theme/login/background.svg
+rm -f /usr/share/desktop-base/kali-theme/login/background-blurred
+
+cp -f /usr/share/panter-images/login.jpg /usr/share/desktop-base/kali-theme/login/background
+cp -f /usr/share/panter-images/login.jpg /usr/share/desktop-base/kali-theme/login/background-blurred
+cp -f /usr/share/panter-images/login.svg /usr/share/desktop-base/kali-theme/login/background.svg
+
+mkdir -p /etc/lightdm
+cat << 'CONF' > /etc/lightdm/lightdm-gtk-greeter.conf
+[greeter]
+background=/usr/share/panter-images/login.jpg
+CONF
+
+# ==========================================
+# 3. KABUK (SHELL) AYARLARI VE İZİNLER
+# ==========================================
+sed -i 's/DSHELL=\/bin\/zsh/DSHELL=\/bin\/bash/g' /etc/adduser.conf
+chsh -s /bin/bash root
+
+chmod -R 755 /usr/share/backgrounds/kali/
+chmod -R 755 /usr/share/desktop-base/kali-theme/login/
+chmod -R 755 /usr/share/panter-images/
+
+echo ">>> Panter-OS customization completed."
