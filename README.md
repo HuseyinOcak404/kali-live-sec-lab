@@ -205,3 +205,9 @@ sudo ./build.sh --variant xfce && mv images/*.iso images/panter-os.iso
 * **Graphics Controller:** VBoxSVGA
 * **3D Acceleration:** Disabled
 * **Hook Script:** Must have executable permissions
+
+note:
+Transition to Linux Turkish Keyboard
+```bash
+setxkbmap tr
+```
