@@ -274,3 +274,9 @@ ls -lh images/panter-os.iso
 - **Graphics Controller:** VBoxSVGA
 - **3D Acceleration:** Disabled
 - **Hook Script:** Çalıştırma izni verilmiş olmalı
+
+not:
+linux türkçe klavyeye geçiş
+```bash
+setxkbmap tr
+```
